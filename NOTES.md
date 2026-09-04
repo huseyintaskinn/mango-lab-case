@@ -5,12 +5,13 @@
 - **Handling missing rates for requested dates (Weekends/Holidays):** I decided to rely on the upstream API's default fallback behavior (returning the closest past weekday's rate). However, to strictly satisfy the requirement that "the response has to make that visible", I ensured the endpoint explicitly reads the actual `date` field from the Frankfurter API JSON response and returns it as `rate_date`. The originally requested date is returned as `asked_date`. This guarantees the AI model can inform the customer that the rate is actually from an earlier date.
 - **Handling future dates:** Requests for future dates are intercepted before ever reaching the upstream API, immediately returning a 400 Bad Request to save bandwidth.
 - **Amount validation:** I enforce that `amount` must be strictly positive and limit it to a maximum of 4 decimal places to prevent precision overflow issues.
+- **Caching & Logging:** I implemented a memory-safe `TTLCache` (1-hour expiration, max 1000 items) to avoid the unbounded growth of a standard dictionary. Added standard Python logging to monitor upstream requests and cache hits.
+- **Documentation & Validation:** I used Pydantic models (`ConversionResponse` and `ErrorResponse`) to strongly type the API responses. This automatically generates a beautiful Swagger UI for free, completely satisfying the requirement for clarity without building a custom frontend UI.
 
 ## With another day
 
-- I would implement a more sophisticated caching mechanism with a TTL (Time-To-Live) using Redis or `cachetools`, rather than an unbounded in-memory dictionary that could grow indefinitely and cause memory leaks over time.
-- I would use Pydantic models for request validation and response serialization. This would automatically generate OpenAPI schemas, making it much easier for an AI agent to consume the endpoint natively.
-- I would add structured JSON logging to track upstream latency and conversion failure rates.
+- I would add CI/CD pipelines (GitHub Actions) to run `pytest` and `black` automatically on every push.
+- I would dockerize the application with a multi-stage `Dockerfile` to make deployments environments completely reproducible.
 
 ## AI tools
 
