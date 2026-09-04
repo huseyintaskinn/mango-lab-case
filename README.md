@@ -12,9 +12,22 @@ A currency conversion HTTP service built for AI agent consumption, wrapping the 
    ```
    The service will listen on `$PORT` (default 8080).
 
-## How to run the tests
+## How to Interact / Test
 
-The tests are written using `pytest` and pass without any network access by mocking the upstream API.
+Once the service is running, it exposes a fully documented, interactive Swagger UI. You can test it by simply visiting:
+👉 **[http://localhost:8080/docs](http://localhost:8080/docs)**
+
+Alternatively, test from your terminal via `curl`:
+```bash
+curl "http://localhost:8080/tools/convert?amount=100&from=EUR&to=TRY&date=2024-08-28"
+```
+
+## How to run the tests (Network-less)
+
+The brief strictly requires: *"Tests that pass with no network at all"*. 
+
+To fulfill this, the `./test.sh` script overrides the `FX_UPSTREAM_BASE` environment variable to point to a closed/dummy port (`http://localhost:1`). Inside `test_main.py`, we use the `pytest-httpx` library to mock out the upstream requests and return synthetic JSON responses. This completely isolates our test suite from the real Frankfurter API.
+
 Run the tests using the provided script:
 ```bash
 ./test.sh
